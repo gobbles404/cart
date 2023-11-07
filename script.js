@@ -1,16 +1,13 @@
 "use strict";
 
-// I don't really understand what I'm getting when I interact with the dom
 const buttons = document.querySelectorAll("button");
-console.log(buttons);
 
 const checkForItem = (id) =>
   document.getElementById(`item-${id[id.length - 1]}-cart`);
 
 function updateQuantity(item, line, increment = true) {
   // grab elements
-  console.log(item);
-  console.log(line);
+  console.log(increment);
   const price = getPrice(item);
   const quantityElement = line.querySelector(".item-quantity");
   const itemTotalPrice = line.querySelector(".item-cost-label");
@@ -49,8 +46,8 @@ function createLine(item) {
         <div class="item-quantity">x1</div>
         <div class="item-cost-label">$${price}</div>
         <div class="increment-decrement-container">
-          <button class="increment" id="inc-btn-1">+</button>
-          <button class="decrement" id="dec-btn-1">-</button>
+          <button class="increment" id="inc-btn-${itemId}">+</button>
+          <button class="decrement" id="dec-btn-${itemId}">-</button>
         </div>
       </div>
     `;
@@ -70,13 +67,16 @@ function createLine(item) {
 
   console.log([...incrementButtons]);
 
-  [...incrementButtons].forEach((button) =>
-    button.addEventListener("click", addToCart)
-  );
-  [...decrementButtons].forEach((button) =>
-    // todo pass a param to this or handle the idea it makes count -- in some way
-    button.addEventListener("click", addToCart)
-  );
+  [...incrementButtons].forEach((button) => {
+    button.addEventListener("click", function () {
+      updateCart.call(this, true);
+    });
+  });
+  [...decrementButtons].forEach((button) => {
+    button.addEventListener("click", function () {
+      updateCart.call(this, false);
+    });
+  });
 }
 
 const getPrice = (item) => {
@@ -88,14 +88,14 @@ const getPrice = (item) => {
   return price;
 };
 
-function addToCart() {
-  console.log(this.id);
-  const line = checkForItem(this.id[this.id.length - 1]);
-  console.log(Boolean(line));
-  // can I determine if from increment or decrement in here then just pass to updateQuantiy?
-  line ? updateQuantity(this, line) : createLine(this);
+function updateCart(increment) {
+  const itemId = this.id[this.id.length - 1];
+  const line = checkForItem(itemId);
+  line ? updateQuantity(this, line, increment) : createLine(this);
 }
 
-buttons.forEach(function (button) {
-  button.addEventListener("click", addToCart);
+buttons.forEach((button) => {
+  button.addEventListener("click", function () {
+    updateCart.call(this, true);
+  });
 });
