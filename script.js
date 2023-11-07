@@ -9,6 +9,8 @@ const checkForItem = (id) =>
 
 function updateQuantity(item, line, increment = true) {
   // grab elements
+  console.log(item);
+  console.log(line);
   const price = getPrice(item);
   const quantityElement = line.querySelector(".item-quantity");
   const itemTotalPrice = line.querySelector(".item-cost-label");
@@ -47,8 +49,8 @@ function createLine(item) {
         <div class="item-quantity">x1</div>
         <div class="item-cost-label">$${price}</div>
         <div class="increment-decrement-container">
-          <button class="increment">+</button>
-          <button class="decrement">-</button>
+          <button class="increment" id="inc-btn-1">+</button>
+          <button class="decrement" id="dec-btn-1">-</button>
         </div>
       </div>
     `;
@@ -78,11 +80,10 @@ function createLine(item) {
 }
 
 const getPrice = (item) => {
-  // go up to parent class of item
-  const itemContainer = item.parentNode;
-  // go down to price div, get textContent
-  const priceElement = itemContainer.querySelector(".item-price").textContent;
-  // parse textContent to number
+  const idValue = item.id.split("-");
+  const classToQuery = "item " + idValue[idValue.length - 1];
+  parent = document.getElementsByClassName(classToQuery)[0];
+  const priceElement = parent.querySelector(".item-price").textContent;
   const price = parseFloat(priceElement.replace("Price: ", ""));
   return price;
 };
@@ -90,6 +91,7 @@ const getPrice = (item) => {
 function addToCart() {
   console.log(this.id);
   const line = checkForItem(this.id[this.id.length - 1]);
+  console.log(Boolean(line));
   // can I determine if from increment or decrement in here then just pass to updateQuantiy?
   line ? updateQuantity(this, line) : createLine(this);
 }
